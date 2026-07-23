@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>礦坑獵魔者 - 橫向卷軸打寶 RPG</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 遊戲主畫布容器 -->
+  <div id="game-wrap">
+    <canvas id="game" width="1280" height="720"></canvas>
+
+    <!-- ===== HUD（平視顯示器）===== -->
+    <div id="hud" class="hidden">
+      <!-- 左上：角色狀態 -->
+      <div id="status-panel">
+        <div id="lvl-badge">1</div>
+        <div id="bars">
+          <div class="bar hp-bar"><div id="hp-fill"></div><span id="hp-text">100 / 100</span></div>
+          <div class="bar xp-bar"><div id="xp-fill"></div><span id="xp-text">EXP 0 / 50</span></div>
+        </div>
+      </div>
+      <!-- 右上：金幣 -->
+      <div id="gold-panel"><span class="coin-icon"></span><span id="gold-text">0</span></div>
+      <!-- 左下：裝備快捷顯示 -->
+      <div id="equip-panel">
+        <div class="equip-slot" id="hud-weapon" title="武器"><span class="slot-hint">無武器</span></div>
+        <div class="equip-slot" id="hud-armor" title="防具"><span class="slot-hint">無防具</span></div>
+      </div>
+      <!-- 右下：操作提示 -->
+      <div id="keys-hint">←→ 移動｜Space 跳躍｜J 攻擊(連段)｜S+Space 下跳｜I 背包｜Esc 暫停｜M 靜音</div>
+      <!-- 首領血條 -->
+      <div id="boss-bar" class="hidden">
+        <div id="boss-name">獸王・戈魯姆</div>
+        <div class="bar boss-hp"><div id="boss-fill"></div></div>
+      </div>
+    </div>
+
+    <!-- ===== 區域名稱橫幅 ===== -->
+    <div id="zone-banner" class="hidden"></div>
+
+    <!-- ===== 拾取通知（Toast）===== -->
+    <div id="toasts"></div>
+
+    <!-- ===== 背包 / 裝備介面 ===== -->
+    <div id="inventory" class="modal hidden">
+      <div class="panel">
+        <h2>背包 <span class="panel-sub">(左鍵裝備 / 右鍵賣出)</span></h2>
+        <div id="inv-body">
+          <div id="inv-left">
+            <div id="equipped-row">
+              <div class="inv-slot equip-target" id="eq-weapon" data-slot="weapon"><span class="slot-label">武器</span></div>
+              <div class="inv-slot equip-target" id="eq-armor" data-slot="armor"><span class="slot-label">防具</span></div>
+            </div>
+            <div id="inv-grid"></div>
+          </div>
+          <div id="inv-stats"></div>
+        </div>
+        <div class="panel-tip">按 I 或 Esc 關閉</div>
+      </div>
+    </div>
+
+    <!-- ===== 物品提示框 ===== -->
+    <div id="tooltip" class="hidden"></div>
+
+    <!-- ===== 標題畫面 ===== -->
+    <div id="overlay-title" class="overlay">
+      <h1>⛏ 礦坑獵魔者</h1>
+      <p class="subtitle">深入水晶礦坑，討伐獸人，奪取傳說神兵！</p>
+      <div class="controls-card">
+        <div><b>← → / A D</b>　移動</div>
+        <div><b>Space / W / ↑</b>　跳躍（可二段緩衝）</div>
+        <div><b>J / X</b>　攻擊（連按三段連擊）</div>
+        <div><b>S + Space</b>　下落穿過平台</div>
+        <div><b>I</b>　背包　<b>Esc / P</b>　暫停　<b>M</b>　靜音</div>
+      </div>
+      <p id="loading-text">資源載入中...</p>
+      <p class="press-key hidden" id="press-start">— 按任意鍵開始冒險 —</p>
+    </div>
+
+    <!-- ===== 暫停畫面 ===== -->
+    <div id="overlay-pause" class="overlay hidden">
+      <h1>⏸ 遊戲暫停</h1>
+      <p class="press-key">按 Esc / P 繼續</p>
+    </div>
+
+    <!-- ===== 死亡畫面 ===== -->
+    <div id="overlay-dead" class="overlay hidden">
+      <h1 class="dead-title">你死了</h1>
+      <p id="dead-info"></p>
+      <p class="press-key">即將於檢查點重生...</p>
+    </div>
+
+    <!-- ===== 勝利橫幅 ===== -->
+    <div id="overlay-victory" class="overlay hidden">
+      <h1 class="win-title">🏆 討伐成功！</h1>
+      <p>獸王・戈魯姆已被擊敗，礦坑恢復了平靜。</p>
+      <p id="victory-stats"></p>
+      <p class="press-key">按任意鍵繼續探索與打寶</p>
+    </div>
+  </div>
+
+  <!-- 模組載入順序：底層工具 → 遊戲系統 → 主迴圈 -->
+  <script src="physics.js"></script>
+  <script src="assets.js"></script>
+  <script src="audio.js"></script>
+  <script src="effects.js"></script>
+  <script src="collision.js"></script>
+  <script src="level.js"></script>
+  <script src="item.js"></script>
+  <script src="player.js"></script>
+  <script src="enemy.js"></script>
+  <script src="ui.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

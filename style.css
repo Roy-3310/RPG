@@ -1,0 +1,333 @@
+/* ============================================================
+   style.css - 遊戲介面樣式
+   畫布置中、HUD、背包、提示框、各種覆蓋畫面
+   ============================================================ */
+
+* { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+
+:root {
+  --c-common: #b8c2cc;      /* 普通 - 灰白 */
+  --c-rare: #4da6ff;        /* 稀有 - 藍 */
+  --c-epic: #b968ff;        /* 史詩 - 紫 */
+  --c-legend: #ffa726;      /* 傳說 - 橙 */
+  --panel-bg: rgba(16, 14, 26, 0.94);
+  --panel-border: #4a3f66;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  background: #07060c;
+  overflow: hidden;
+  font-family: "Microsoft JhengHei", "Noto Sans TC", system-ui, sans-serif;
+  color: #e8e4f0;
+}
+
+/* ---------- 畫布容器：保持 16:9 置中 ---------- */
+#game-wrap {
+  position: relative;
+  width: 100vw; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+}
+#game {
+  background: #0b0916;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  /* 依視窗大小放大 / 縮小並維持 16:9 滿版 */
+  width: min(100vw, calc(100vh * 16 / 9));
+  height: auto;
+  aspect-ratio: 16 / 9;
+  box-shadow: 0 0 60px rgba(120, 80, 255, 0.15);
+}
+
+.hidden { display: none !important; }
+
+/* ============================================================
+   HUD
+   ============================================================ */
+#hud {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  font-size: 14px;
+}
+
+/* 左上角色狀態 */
+#status-panel {
+  position: absolute; top: 16px; left: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+#lvl-badge {
+  width: 46px; height: 46px;
+  background: radial-gradient(circle at 35% 30%, #6a5acd, #2c2352);
+  border: 2px solid #8f7fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: bold; color: #fff;
+  text-shadow: 0 1px 3px #000;
+  box-shadow: 0 2px 8px rgba(0,0,0,.6);
+}
+#bars { display: flex; flex-direction: column; gap: 5px; }
+.bar {
+  position: relative;
+  width: 240px; height: 18px;
+  background: rgba(0,0,0,.65);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.bar span {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: bold;
+  text-shadow: 0 1px 2px #000;
+}
+.xp-bar { height: 12px; width: 200px; }
+.xp-bar span { font-size: 9px; }
+#hp-fill {
+  height: 100%; width: 100%;
+  background: linear-gradient(180deg, #ff6b6b, #c62828);
+  transition: width .15s ease-out;
+}
+#hp-fill.low { background: linear-gradient(180deg, #ff8a80, #ff1744); animation: hp-pulse .6s infinite; }
+@keyframes hp-pulse { 50% { filter: brightness(1.5); } }
+#xp-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(180deg, #b2ff59, #558b2f);
+  transition: width .2s ease-out;
+}
+
+/* 右上金幣 */
+#gold-panel {
+  position: absolute; top: 16px; right: 16px;
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(0,0,0,.55);
+  border: 1px solid rgba(255, 200, 80, .4);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 17px; font-weight: bold; color: #ffd54f;
+  text-shadow: 0 1px 2px #000;
+}
+.coin-icon {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe082, #ff8f00);
+  border: 1px solid #ffca28;
+  display: inline-block;
+}
+
+/* 左下裝備顯示 */
+#equip-panel {
+  position: absolute; bottom: 16px; left: 16px;
+  display: flex; gap: 8px;
+}
+.equip-slot {
+  width: 52px; height: 52px;
+  background: rgba(0,0,0,.6);
+  border: 2px solid #555;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  position: relative;
+}
+.equip-slot .slot-hint { font-size: 9px; color: #888; text-align: center; }
+
+/* 右下操作提示 */
+#keys-hint {
+  position: absolute; bottom: 10px; right: 14px;
+  font-size: 11px; color: rgba(255,255,255,.45);
+  text-shadow: 0 1px 2px #000;
+}
+
+/* 首領血條 */
+#boss-bar {
+  position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+  width: 520px; text-align: center;
+}
+#boss-name {
+  font-size: 16px; font-weight: bold; color: #ff8a80;
+  text-shadow: 0 0 8px #b71c1c, 0 1px 2px #000;
+  margin-bottom: 4px; letter-spacing: 4px;
+}
+.boss-hp { width: 100%; height: 14px; border-color: #b71c1c; }
+#boss-fill {
+  height: 100%; width: 100%;
+  background: linear-gradient(180deg, #ef5350, #7f0000);
+  transition: width .12s ease-out;
+}
+
+/* ============================================================
+   區域橫幅
+   ============================================================ */
+#zone-banner {
+  position: absolute; top: 22%; left: 50%; transform: translateX(-50%);
+  font-size: 34px; font-weight: bold; letter-spacing: 12px;
+  color: #e8dcff; white-space: nowrap;
+  text-shadow: 0 0 18px #7c4dff, 0 2px 4px #000;
+  pointer-events: none;
+  animation: banner-in 2.8s ease forwards;
+}
+@keyframes banner-in {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(14px) scale(.94); }
+  15%  { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+}
+
+/* ============================================================
+   拾取通知 Toast
+   ============================================================ */
+#toasts {
+  position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column-reverse; align-items: center; gap: 4px;
+  pointer-events: none;
+}
+.toast {
+  background: rgba(10, 8, 20, .85);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 6px;
+  padding: 5px 14px;
+  font-size: 13px; font-weight: bold;
+  text-shadow: 0 1px 2px #000;
+  animation: toast-life 2.6s ease forwards;
+}
+@keyframes toast-life {
+  0%   { opacity: 0; transform: translateY(10px); }
+  10%  { opacity: 1; transform: translateY(0); }
+  75%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-8px); }
+}
+
+/* ============================================================
+   背包介面
+   ============================================================ */
+.modal {
+  position: absolute; inset: 0;
+  background: rgba(0, 0, 0, .55);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 20;
+}
+.panel {
+  background: var(--panel-bg);
+  border: 2px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0 10px 50px rgba(0,0,0,.8);
+  min-width: 620px;
+}
+.panel h2 { font-size: 20px; margin-bottom: 14px; color: #cfc2ff; letter-spacing: 2px; }
+.panel-sub { font-size: 12px; color: #8b80a8; font-weight: normal; }
+.panel-tip { margin-top: 12px; font-size: 11px; color: #6f6590; text-align: center; }
+
+#inv-body { display: flex; gap: 20px; }
+#equipped-row { display: flex; gap: 10px; margin-bottom: 12px; }
+
+#inv-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 58px);
+  gap: 8px;
+}
+.inv-slot {
+  width: 58px; height: 58px;
+  background: rgba(255,255,255,.05);
+  border: 2px solid #3a3352;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  position: relative;
+  cursor: pointer;
+  transition: transform .08s, border-color .08s;
+}
+.inv-slot:hover { transform: scale(1.07); border-color: #8f7fff; z-index: 2; }
+.inv-slot.empty { cursor: default; }
+.inv-slot.empty:hover { transform: none; border-color: #3a3352; }
+.inv-slot .ilvl {
+  position: absolute; bottom: 1px; right: 4px;
+  font-size: 10px; color: #ccc; text-shadow: 0 1px 2px #000;
+}
+.inv-slot .slot-label {
+  position: absolute; top: -9px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; color: #9a8fc0; background: var(--panel-bg); padding: 0 4px;
+  white-space: nowrap;
+}
+.equip-target { border-style: dashed; border-color: #5a4f80; }
+
+/* 稀有度外框顏色 */
+.r-common { border-color: var(--c-common) !important; }
+.r-rare   { border-color: var(--c-rare) !important;   box-shadow: 0 0 8px rgba(77,166,255,.45); }
+.r-epic   { border-color: var(--c-epic) !important;   box-shadow: 0 0 10px rgba(185,104,255,.55); }
+.r-legend { border-color: var(--c-legend) !important; box-shadow: 0 0 12px rgba(255,167,38,.65); animation: legend-glow 1.6s infinite; }
+@keyframes legend-glow { 50% { box-shadow: 0 0 20px rgba(255,167,38,.95); } }
+
+/* 屬性欄 */
+#inv-stats {
+  min-width: 190px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid #3a3352;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 13px;
+  line-height: 2;
+}
+#inv-stats h3 { font-size: 14px; color: #cfc2ff; margin-bottom: 6px; }
+#inv-stats .stat-val { float: right; font-weight: bold; color: #fff; }
+
+/* ============================================================
+   物品提示框
+   ============================================================ */
+#tooltip {
+  position: absolute;
+  z-index: 40;
+  background: rgba(8, 6, 18, .96);
+  border: 1px solid #6a5f8e;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  line-height: 1.7;
+  pointer-events: none;
+  max-width: 260px;
+  box-shadow: 0 6px 24px rgba(0,0,0,.8);
+}
+#tooltip .tt-name { font-size: 14px; font-weight: bold; }
+#tooltip .tt-type { color: #8b80a8; font-size: 11px; }
+#tooltip .tt-stat { color: #b6e3ff; }
+#tooltip .tt-bonus { color: #ffd54f; }
+#tooltip .tt-cmp-up { color: #69f0ae; }
+#tooltip .tt-cmp-down { color: #ff8a80; }
+#tooltip .tt-value { color: #ffd54f; font-size: 11px; margin-top: 2px; }
+
+/* ============================================================
+   覆蓋畫面（標題 / 暫停 / 死亡 / 勝利）
+   ============================================================ */
+.overlay {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, rgba(20,16,40,.88), rgba(5,4,12,.96));
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 18px;
+  z-index: 30;
+  text-align: center;
+}
+.overlay h1 {
+  font-size: 52px; letter-spacing: 10px;
+  color: #e8dcff;
+  text-shadow: 0 0 30px #7c4dff, 0 4px 8px #000;
+}
+.overlay .subtitle { color: #a89cc8; font-size: 16px; letter-spacing: 3px; }
+.controls-card {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 10px;
+  padding: 16px 30px;
+  font-size: 14px;
+  line-height: 2.1;
+  color: #cfc8e8;
+  text-align: left;
+}
+.controls-card b { color: #ffd54f; font-family: monospace; }
+.press-key {
+  font-size: 16px; color: #fff; letter-spacing: 3px;
+  animation: blink 1.2s infinite;
+}
+@keyframes blink { 50% { opacity: .25; } }
+#loading-text { color: #8b80a8; font-size: 14px; }
+.dead-title { color: #ff5252 !important; text-shadow: 0 0 30px #b71c1c, 0 4px 8px #000 !important; }
+.win-title  { color: #ffd54f !important; text-shadow: 0 0 30px #ff8f00, 0 4px 8px #000 !important; }
+#dead-info, #victory-stats { color: #bbb; font-size: 14px; line-height: 1.9; }
