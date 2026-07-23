@@ -270,7 +270,8 @@ class Animator {
   /** 目前影格索引 */
   get frame() {
     const a = this.def.anims[this.name];
-    return Math.min(Math.floor(this.time * a.fps), a.frames - 1) % a.frames;
+    const raw = Math.floor(this.time * a.fps);
+    return a.loop ? raw % a.frames : Math.min(raw, a.frames - 1);
   }
 
   /** 目前動畫定義 */
